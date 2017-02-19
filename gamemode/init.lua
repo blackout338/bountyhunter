@@ -64,9 +64,9 @@ function GM:EntityTakeDamage(victim, dmgInfo)
 	local victimId = victim:UniqueId()
 	
 	if IsValid(attacker) and attacker:IsPlayer() and victim:IsPlayer() and victimId != attackerObject.target then
-		attacker:TakeDamage(dmgInfo:GetDamage(), attacker, dmgInfo:GetInflictor)
+		attacker:TakeDamage(dmgInfo:GetDamage(), attacker, dmgInfo:GetInflictor())
 	else 
-		attackerObject.score = math.Round(attackerObject.score + (dmgInfo:GetDamage/10))
+		attackerObject.score = math.Round(attackerObject.score + (dmgInfo:GetDamage()/10))
 	end
 end
 
