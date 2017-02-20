@@ -116,7 +116,7 @@ end
 RoundFunctions = { round_RoundWait, round_RoundPrep, round_RoundActive, round_RoundEnd } 
 --[[
 RoundFunctions = {
-	--[[ROUND_WAIT] = function()
+	[ROUND_WAIT] = function()
 		ROUND:SetRoundTime(0)
 	end,
 	[ROUND_PREP] = function()
@@ -163,6 +163,14 @@ think_RoundActive = function()
 	if(timeTemp < 0) then
 		ROUND:SetRound(ROUND_END)
 	end
+	if (#player.GetAll() == 1) then
+			ROUND:SetRound(ROUND_WAIT)
+			print "SET ROUND TO WAIT"
+			for k, v in pairs(player.GetAll()) do
+				v:SetTeam(1)
+				v:Spawn()
+			end
+	end
 end
 
 think_RoundEnd = function()
@@ -173,7 +181,7 @@ think_RoundEnd = function()
 end
 ThinkFunctions = {think_RoundWait, think_RoundPrep, think_RoundActive, think_RoundEnd}
 --[[ThinkFunctions = {
-	--[[[ROUND_WAIT] = function()
+	[ROUND_WAIT] = function()
 		if(#player.GetAll() > 1) then
 			ROUND:SetRound(ROUND_PREP)
 		end
@@ -198,20 +206,16 @@ ThinkFunctions = {think_RoundWait, think_RoundPrep, think_RoundActive, think_Rou
 			return
 		end
 	end
-}]]
+}
+
+]]--
 
 
 function RoundThink()
 
 	local cur = ROUND:GetRound() + 1
-
-	if not cur == 0 then
-		print "hi"
-		if (#player.GetAll() < 2) then
-			ROUND:SetRound(ROUND_WAIT)
-			print "SET ROUND TO WAIT"
-		end
-	end
+	
+	
 	
 	if ThinkFunctions[cur] then
 		--print "Stop 2"

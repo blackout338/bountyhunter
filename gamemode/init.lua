@@ -8,6 +8,22 @@ AddCSLuaFile("cl_init.lua")
 --[-----------------------------------------------------------------------------------------------------------------------------------------------------]-- 
 PLAYER_LIST = {}
 
+playerModels = { //Citizen
+"models/humans/Group01/Male_01.mdl",
+"models/humans/Group01/male_02.mdl",
+"models/humans/Group01/male_03.mdl",
+"models/humans/Group01/Male_04.mdl",
+"models/humans/Group01/Male_05.mdl",
+"models/humans/Group01/male_06.mdl",
+"models/humans/Group01/male_07.mdl",
+"models/humans/Group01/male_08.mdl",
+"models/humans/Group01/male_09.mdl",
+"models/humans/Group01/male_09.mdl",
+"models/humans/Group01/Male_01.mdl",
+"models/humans/Group01/male_03.mdl",
+"models/humans/Group01/Male_05.mdl",
+"models/humans/Group01/male_09.mdl"
+}
 
 --This variable will be populated later when we use the newly made concommand "entity_pos" to retrieve appropriate locations.
 spawn_table_locations = {}
@@ -31,14 +47,24 @@ function GM:PlayerAuthed(ply, steamId, UniqueID)
 	newPlayerObject.score = 0
 
 	PLAYER_LIST[UniqueID] = newPlayerObject
-
+	--[[
+	ply:SetTeam(2)
+	ply:Spectate( OBS_MODE_ROAMING )
+	ply:SetMoveType(MOVETYPE_NOCLIP)
+	ply:SetNotSolid(true)
+	]]--
 end
 --[-----------------------------------------------------------------------------------------------------------------------------------------------------]--
 --[                                                              PLAYER SPAWN LOGIC                                                                     ]--
 --[-----------------------------------------------------------------------------------------------------------------------------------------------------]-- 
 function GM:PlayerInitialSpawn(ply)
-	ply:SetTeam(TEAM_SPECTATOR)
-	ply:Spectate(OBS_MODE_ROAMING)
+	if ROUND:GetRound() == 0 then
+		ply:SetTeam(TEAM_SPECTATOR)
+	else
+		print "SETTING TEAM TO HUNTER!"
+		ply:SetTeam(TEAM_HUNTER)
+	end
+	print (ROUND:GetRound())
 	--[[if ply:Team() == TEAM_SPECTATOR then
 		ply:Spectate(OBS_MODE_ROAMING)
 	return
@@ -46,7 +72,19 @@ function GM:PlayerInitialSpawn(ply)
 	--timer.Simple(1, function() ply:KillSilent() end)
 end
 
+
+
 function GM:PlayerSpawn(ply)
+	if ROUND:GetRound() == 0 then
+		ply:StripWeapons()
+		ply:StripAmmo()
+		ply:Spectate( OBS_MODE_ROAMING )
+	else 
+		ply:UnSpectate()
+		ply:SetTeam(1)
+		ply:SetModel(table.Random(playerModels))
+	end
+	print "PLAYER SPAWNED"
 	--ply:SetTeam(TEAM_SPECTATOR)
 	--local player = PLAYER_LIST[ply:UniqueID()]
 	--getNewBounty(player)
@@ -71,7 +109,7 @@ end
 	end
 	
 end]]
-
+--[[
 function GM:EntityTakeDamage(victim, dmgInfo)
 	local attacker = dmgInfo:GetAttacker()
 	local attackerObject = PLAYER_LIST[attacker:UniqueID()]
@@ -83,6 +121,7 @@ function GM:EntityTakeDamage(victim, dmgInfo)
 		attackerObject.score = math.Round(attackerObject.score + (dmgInfo:GetDamage()/10))
 	end
 end
+]]--
 
 --[-----------------------------------------------------------------------------------------------------------------------------------------------------]--
 --[                                                          CHAT COMMANDS AND LISTNERS                                                                 ]--
