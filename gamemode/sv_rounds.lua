@@ -53,9 +53,24 @@ print "4"
 
 --Spawns, and sets teams for all players. If the player does not have a bounty, assign them a new one.
 function ROUND:SortPlayers(freezePlayers)
-	for k,v in pairs(player.GetAll()) do
-		v:SetTeam(TEAM_HUNTER)
-		v:Spawn()
+	for k,v in pairs(PLAYER_LIST) do
+		local localCounter = 0
+		v.object:SetTeam(TEAM_HUNTER)
+		v.object:Spawn()
+		print("SPAWNED VIA SORT PLAYERS")
+		local pool = PLAYER_LIST
+		--table.remove(pool, v.object:UniqueID())
+		
+		local temp = pool[v.object:UniqueID()]
+		pool[v.object:UniqueID()] = nil
+		for k, v in pairs(pool) do localCounter = localCounter + 1 end
+
+		print("LENGTH: " .. localCounter)
+		local otherNameVar = table.Random(pool)
+		v.target = otherNameVar.object:UniqueID()
+		pool[v.object:UniqueID()] = temp
+		print("There are these players: " .. table.ToString(PLAYER_LIST, "PLAYER_LIST", true))
+		print("[Bounty]: Set bounty for " .. v.object:Nick() .. ", target is '" .. otherNameVar.object:Nick() .. "'")
 	end
 	
 	if freezePlayers then
@@ -73,16 +88,22 @@ print "5"
 
 --Assigns a new bounty to the parsed player.
 function getNewBounty(player)
-	for k, v in RandomPairs(PLAYER_LIST) do
-		local otherPlayer = v
-		if !otherPlayer.targeted then
-			player.target = otherPlayer.id
-			return
-		end
-		if player.target == nil then
-			player.target = PLAYER_LIST[0].id
-		end
-	end
+		local localCounter = 0
+		player.object:SetTeam(TEAM_HUNTER)
+		player.object:Spawn()
+		local pool = PLAYER_LIST
+		--table.remove(pool, v.object:UniqueID())
+		
+		local temp = pool[player.object:UniqueID()]
+		pool[player.object:UniqueID()] = nil
+		for k, v in pairs(pool) do localCounter = localCounter + 1 end
+
+		print("LENGTH: " .. localCounter)
+		local otherNameVar = table.Random(pool)
+		player.target = otherNameVar.object:UniqueID()
+		pool[player.object:UniqueID()] = temp
+		print("[Bounty]: Set bounty for " .. player.object:Nick() .. ", target is '" .. otherNameVar.object:Nick() .. "'")
+	
 end
 print "6"
 --[-----------------------------------------------------------------------------------------------------------------------------------------------------]--
@@ -144,7 +165,9 @@ print "7"
 --[-----------------------------------------------------------------------------------------------------------------------------------------------------]-- 
 think_RoundWait = function()
 	--print "hi"
-	if(#player.GetAll() > 1) then
+	counter = 0
+	for k,v in pairs(PLAYER_LIST) do counter = counter + 1 end
+	if(counter > 1) then
 		print "hi again"
 		ROUND:SetRound(ROUND_PREP)
 	end
