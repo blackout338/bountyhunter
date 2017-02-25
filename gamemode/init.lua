@@ -37,7 +37,7 @@ end
 --[-----------------------------------------------------------------------------------------------------------------------------------------------------]-- 
 
 function GM:PlayerAuthed(ply, steamId, UniqueID)
-		
+	print("Authenticating player " .. ply:Nick())
 	newPlayerObject = {}
 	newPlayerObject.target = nil
 	newPlayerObject.targeted = false
@@ -45,6 +45,7 @@ function GM:PlayerAuthed(ply, steamId, UniqueID)
 	newPlayerObject.id = UniqueID
 	newPlayerObject.steamId = steamId
 	newPlayerObject.score = 0
+	newPlayerObject.spawned = false
 
 	PLAYER_LIST[UniqueID] = newPlayerObject
 	--[[
@@ -58,13 +59,28 @@ end
 --[                                                              PLAYER SPAWN LOGIC                                                                     ]--
 --[-----------------------------------------------------------------------------------------------------------------------------------------------------]-- 
 function GM:PlayerInitialSpawn(ply)
+	print("Running 1 " .. ply:Nick())
+	print("Player " .. ply:Nick() .. " is a player: " .. tostring(ply:IsPlayer()))
+	if ply:IsBot() then
+		newPlayerObject = {}
+		newPlayerObject.target = nil
+		newPlayerObject.targeted = false
+		newPlayerObject.object = ply
+		newPlayerObject.id = ply:UniqueID()
+		newPlayerObject.score = 0
+		newPlayerObject.spawned = false
+
+		PLAYER_LIST[ply:UniqueID()] = newPlayerObject
+		
+		print("Added bot to player list named '" .. ply:Nick() .. "'")
+	end
+
 	if ROUND:GetRound() == 0 then
 		ply:SetTeam(TEAM_SPECTATOR)
 	else
 		print "SETTING TEAM TO HUNTER!"
 		ply:SetTeam(TEAM_HUNTER)
 	end
-	print (ROUND:GetRound())
 	--[[if ply:Team() == TEAM_SPECTATOR then
 		ply:Spectate(OBS_MODE_ROAMING)
 	return
@@ -93,6 +109,10 @@ function GM:PlayerSpawn(ply)
 	--	return
 	--end
 end
+
+function GM:PlayerDisconnected(ply)
+	PLAYER_LIST[ply:UniqueID()] = nil
+end
 --[-----------------------------------------------------------------------------------------------------------------------------------------------------]--
 --[                                                         PLAYER DAMAGING & DEATH                                                                     ]--
 --[-----------------------------------------------------------------------------------------------------------------------------------------------------]-- 
@@ -109,22 +129,16 @@ end
 	end
 	
 end]]
---[[
 function GM:EntityTakeDamage(victim, dmgInfo)
 	local attacker = dmgInfo:GetAttacker()
-	local attackerObject = PLAYER_LIST[attacker:UniqueID()]
 	local victimId = victim:UniqueID()
-	
-	if IsValid(attacker) and attacker:IsPlayer() and victim:IsPlayer() and victimId != attackerObject.target then
-		attacker:TakeDamage(dmgInfo:GetDamage(), attacker, dmgInfo:GetInflictor())
-	else 
-		attackerObject.score = math.Round(attackerObject.score + (dmgInfo:GetDamage()/10))
-	end
+	print("Attacker: " .. attacker:Nick() .. ", Victim: " .. victim:Nick() .. ", Damage: " .. tostring(dmgInfo:GetDamage()) .. ", Inflictor: " .. tostring(dmgInfo:GetInflictor()))
+	attacker:TakeDamage(dmgInfo:GetDamage())
 end
-]]--
+
 
 --[-----------------------------------------------------------------------------------------------------------------------------------------------------]--
---[                                                          CHAT COMMANDS AND LISTNERS                                                                 ]--
+--[                                                          CHAT COMMANDS AND LISTENERS                                                                 ]--
 --[-----------------------------------------------------------------------------------------------------------------------------------------------------]-- 
 
 function GM:PlayerSay(sender, message, senderTeam)

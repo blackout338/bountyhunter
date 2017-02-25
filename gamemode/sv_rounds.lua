@@ -54,13 +54,20 @@ print "4"
 --Spawns, and sets teams for all players. If the player does not have a bounty, assign them a new one.
 function ROUND:SortPlayers(freezePlayers)
 	for k,v in pairs(PLAYER_LIST) do
+		localCounter = 0
 		v.object:SetTeam(TEAM_HUNTER)
 		v.object:Spawn()
 		local pool = PLAYER_LIST
-		table.remove(pool, v.object:UniqueID())
-		---ASDFERDGRD
+		--table.remove(pool, v.object:UniqueID())
+		
+		local temp = pool[v.object:UniqueID()]
+		pool[v.object:UniqueID()] = nil
+		for k, v in pairs(pool) do localCounter = localCounter + 1 end
+
+		print("LENGTH: " .. localCounter)
 		local otherNameVar = table.Random(pool)
 		v.target = otherNameVar.object:Nick()
+		pool[v.object:UniqueID()] = temp
 		print("[Bounty]: Set bounty for " .. v.object:Nick() .. ", target is '" .. otherNameVar.object:Nick() .. "'")
 	end
 	
@@ -150,7 +157,9 @@ print "7"
 --[-----------------------------------------------------------------------------------------------------------------------------------------------------]-- 
 think_RoundWait = function()
 	--print "hi"
-	if(#player.GetAll() > 1) then
+	counter = 0
+	for k,v in pairs(PLAYER_LIST) do counter = counter + 1 end
+	if(counter > 1) then
 		print "hi again"
 		ROUND:SetRound(ROUND_PREP)
 	end
