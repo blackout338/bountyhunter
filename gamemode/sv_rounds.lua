@@ -120,6 +120,7 @@ round_RoundPrep = function()
 	print "Gone to prep"
 	ROUND:SetRoundTime(5)
 	ROUND:SortPlayers(true)
+	WEAPON:SpawnWeapons(spawn_table_locations)
 end
 
 round_RoundActive = function()
