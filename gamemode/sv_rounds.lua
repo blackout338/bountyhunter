@@ -14,18 +14,21 @@ SetGlobalInt("roundPhase", ROUND_WAIT)
 SetGlobalInt("roundTime", 0)
 
 --[-----------------------------------------------------------------------------------------------------------------------------------------------------]--
---[                                                       ROUND VARIABLE MANIPULATION FUNCTIONS                                                         ]--
+--[   (tonumber(time or 5) or 5)                                                    ROUND VARIABLE MANIPULATION FUNCTIONS                                                         ]--
 --[-----------------------------------------------------------------------------------------------------------------------------------------------------]-- 
 
 --Sets Global Integer for 'roundTime'.
 function ROUND:SetRoundTime(time)
-	SetGlobalInt("roundTime", CurTime() + (tonumber(time or 5) or 5))
+	print(time)
+	SetGlobalInt("roundTime", CurTime() + time)
 end
 print "1"
 --Returns current Global Integer for 'roundTime'
 function ROUND:GetRoundTime()
 	local temptime = GetGlobalInt("roundTime")
-	return math.Round(math.Max(temptime - CurTime(), 0))
+	local tempagain = math.Max(temptime - CurTime(), 0)
+	print(tempagain)
+	return tempagain
 end
 print "2"
 --Returns current Global Integer for 'roundPhase'
@@ -35,6 +38,8 @@ end
 print "3"
 --Sets Global Integer for 'roundPhase'. Runs associated Round Function.
 function ROUND:SetRound(round, ...)
+
+	local args = {...}
 	num = round + 1
 	if not RoundFunctions[num] then 
 		--print("cuntsfucked")
@@ -44,6 +49,7 @@ function ROUND:SetRound(round, ...)
 	SetGlobalInt('roundPhase', round)
 	--Unpack args as required
 	RoundFunctions[num](self)
+	hook.Call("OnRoundSet", self, round, unpack(args))
 end
 print "4"
 
@@ -120,7 +126,6 @@ round_RoundPrep = function()
 	print "Gone to prep"
 	ROUND:SetRoundTime(5)
 	ROUND:SortPlayers(true)
-	WEAPON:SpawnWeapons(spawn_table_locations)
 end
 
 round_RoundActive = function()
@@ -133,6 +138,7 @@ round_RoundActive = function()
 end
 round_RoundEnd = function()
 	ROUND:SetRoundTime(5)
+	timer.Remove("weapontimer")
 end
 
 RoundFunctions = { round_RoundWait, round_RoundPrep, round_RoundActive, round_RoundEnd } 
@@ -184,7 +190,7 @@ end
 think_RoundActive = function()
 	--print "ACTIVE ROUND"
 	local timeTemp = ROUND:GetRoundTime()
-	if(timeTemp < 0) then
+	if(timeTemp <= 0) then
 		ROUND:SetRound(ROUND_END)
 	end
 	if (#player.GetAll() == 1) then

@@ -1,7 +1,8 @@
 include("shared.lua")
 include("sv_rounds.lua")
 include("sh_chatbroadcast.lua")
-include("weapon_controller.lua")
+--include("weapon_controller.lua")
+include("sv_weps.lua")
 AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("sh_chatbroadcast.lua")
@@ -174,18 +175,22 @@ end
 --[                                                          CHAT COMMANDS AND LISTENERS                                                                 ]--
 --[-----------------------------------------------------------------------------------------------------------------------------------------------------]-- 
 
-function GM:PlayerSay(sender, message, senderTeam)
-	if IsValid(message) then
-		local message = String.lower(message)
-		if message == "!bounty" then
-			--Use 
-		end
+function GM:PlayerSay( ply, text )
+
+	local text2 = string.lower(text)
+	if text2 == "!bounty" then
+		CB:AddChat(ply,Color(255,255,255),"Your current bounty is: ",Color(255,0,0), PLAYER_LIST[PLAYER_LIST[ply:UniqueID()].target].object:Nick())
+		return ""
 	end
-end	
+
+	return self.BaseClass:PlayerSay(ply, text)
+
+end
 
 
 function GM:Think()
 	self.BaseClass:Think()
+	--CB:AddChat(Color(255,255,255), GetGlobalInt("roundTime"))
 	--self:RoundThink()
 end
 
