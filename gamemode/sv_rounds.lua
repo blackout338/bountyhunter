@@ -35,6 +35,8 @@ end
 print "3"
 --Sets Global Integer for 'roundPhase'. Runs associated Round Function.
 function ROUND:SetRound(round, ...)
+
+	local args = {...}
 	num = round + 1
 	if not RoundFunctions[num] then 
 		--print("cuntsfucked")
@@ -44,6 +46,7 @@ function ROUND:SetRound(round, ...)
 	SetGlobalInt('roundPhase', round)
 	--Unpack args as required
 	RoundFunctions[num](self)
+	hook.Call("OnRoundSet", self, round, unpack(args))
 end
 print "4"
 

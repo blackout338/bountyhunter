@@ -1,6 +1,8 @@
 include("shared.lua")
 include("sv_rounds.lua")
 include("sh_chatbroadcast.lua")
+--include("weapon_controller.lua")
+include("sv_weps.lua")
 AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("sh_chatbroadcast.lua")
@@ -43,7 +45,7 @@ playerModels = { //Citizen
 }
 
 --This variable will be populated later when we use the newly made concommand "entity_pos" to retrieve appropriate locations.
-spawn_table_locations = {}
+spawn_table_locations = {Vector(-2014.169189 -1681.934692 -33.968750)}
 
 function GM:Initialize()
 	ROUND:SetRound(ROUND_WAIT)
@@ -173,14 +175,17 @@ end
 --[                                                          CHAT COMMANDS AND LISTENERS                                                                 ]--
 --[-----------------------------------------------------------------------------------------------------------------------------------------------------]-- 
 
-function GM:PlayerSay(sender, message, senderTeam)
-	if IsValid(message) then
-		local message = String.lower(message)
-		if message == "!bounty" then
-			--Use 
-		end
+function GM:PlayerSay( ply, text )
+
+	local text2 = string.lower(text)
+	if text2 == "!bounty" then
+		CB:AddChat(ply,Color(255,255,255),"Your current bounty is: ",Color(255,0,0), PLAYER_LIST[PLAYER_LIST[ply:UniqueID()].target].object:Nick())
+		return ""
 	end
-end	
+
+	return self.BaseClass:PlayerSay(ply, text)
+
+end
 
 
 function GM:Think()
